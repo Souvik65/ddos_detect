@@ -35,20 +35,21 @@ def packet_callback(packet):
             if packet[IP].dst == target_ip:
                 source_ip = packet[IP].src
                 icmp_request_count[source_ip] += 1
-                print(f"ICMP Echo Request from {source_ip}: Count = {icmp_request_count[source_ip]}")
         elif packet.haslayer(TCP) and packet.haslayer(Raw):
             try:
                 http_payload = packet[Raw].load.decode('utf-8')
                 if 'Host: ' + target_website in http_payload:
                     source_ip = packet[IP].src
                     http_request_count[source_ip] += 1
-                    print(f"HTTP Request from {source_ip}: Count = {http_request_count[source_ip]}")
             except UnicodeDecodeError:
                 pass  # Ignore packets that can't be decoded as HTTP
 
 def monitor_requests():
-    # Capture packets in real-time
-    sniff(iface=MONITOR_INTERFACE, prn=packet_callback, store=False, filter="ip")
+    try:
+        # Capture packets in real-time
+        sniff(iface=MONITOR_INTERFACE, prn=packet_callback, store=False, filter="ip")
+    except Exception as e:
+        print(f"An error occurred in monitor_requests: {e}")
 
 def detect_spike():
     while True:
@@ -57,31 +58,34 @@ def detect_spike():
         total_http_requests = sum(http_request_count.values())
         total_icmp_requests = sum(icmp_request_count.values())
 
-        print(f"Total HTTP Requests in last {TIME_WINDOW} seconds: {total_http_requests}")
-        print(f"Total ICMP Echo Requests in last {TIME_WINDOW} seconds: {total_icmp_requests}")
-
-        if total_http_requests > HTTP_THRESHOLD:
-            print(f"Unusual HTTP activity detected: {total_http_requests} HTTP requests in the last {TIME_WINDOW} seconds")
-
-        if total_icmp_requests > ICMP_THRESHOLD:
-            print(f"Unusual ICMP activity detected: {total_icmp_requests} ICMP Echo Requests in the last {TIME_WINDOW} seconds")
+        if total_http_requests > HTTP_THRESHOLD or total_icmp_requests > ICMP_THRESHOLD:
+            print("Unusual traffic detected.")
+            print(f"Total HTTP Requests in last {TIME_WINDOW} seconds: {total_http_requests}")
+            print(f"Total ICMP Echo Requests in last {TIME_WINDOW} seconds: {total_icmp_requests}")
+            print("Stopping the program due to unusual traffic.")
+            os._exit(1)
 
         # Reset the counts for the next time window
         http_request_count.clear()
         icmp_request_count.clear()
 
 if __name__ == "__main__":
-    # Get the target IP and network interface from user input
-    target_ip = input("Enter the target IP address: ")
-    target_website = input("Enter the target website domain (e.g., example.com): ")
-    MONITOR_INTERFACE = get_valid_interface()
+    try:
+        # Get the target IP and network interface from user input
+        target_ip = input("Enter the target IP address: ")
+        target_website = input("Enter the target website domain (e.g., example.com): ")
+        MONITOR_INTERFACE = get_valid_interface()
 
-    # Run monitoring and detection in parallel
-    monitor_thread = threading.Thread(target=monitor_requests)
-    detect_thread = threading.Thread(target=detect_spike)
+        # Run monitoring and detection in parallel
+        monitor_thread = threading.Thread(target=monitor_requests)
+        detect_thread = threading.Thread(target=detect_spike)
 
-    monitor_thread.start()
-    detect_thread.start()
+        monitor_thread.start()
+        detect_thread.start()
 
-    monitor_thread.join()
-    detect_thread.join()
+        monitor_thread.join()
+        detect_thread.join()
+    except KeyboardInterrupt:
+        print("Script interrupted by user. Exiting...")
+    except Exception as e:
+        print(f"An error occurred in the main block: {e}")
