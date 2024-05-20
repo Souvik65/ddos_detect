@@ -7,10 +7,12 @@ import threading
 TIME_WINDOW = 60  # Time window in seconds to count requests
 HTTP_THRESHOLD = 100  # Number of HTTP requests considered unusual
 ICMP_THRESHOLD = 100  # Number of ICMP requests considered unusual
+SYN_THRESHOLD = 100  # Number of SYN packets considered unusual
 
 # Initialize dictionaries to store the count of requests
 http_request_count = defaultdict(int)
 icmp_request_count = defaultdict(int)
+syn_packet_count = defaultdict(int)
 
 def get_valid_interface():
     interfaces = get_if_list()
@@ -35,6 +37,11 @@ def packet_callback(packet):
             if packet[IP].dst == target_ip:
                 source_ip = packet[IP].src
                 icmp_request_count[source_ip] += 1
+        elif packet.haslayer(TCP):
+            if packet[TCP].flags & 2:  # SYN flag
+                if packet[IP].dport == 80 and packet[IP].dst == target_ip:
+                    source_ip = packet[IP].src
+                    syn_packet_count[source_ip] += 1
         elif packet.haslayer(TCP) and packet.haslayer(Raw):
             try:
                 http_payload = packet[Raw].load.decode('utf-8')
@@ -57,17 +64,20 @@ def detect_spike():
         
         total_http_requests = sum(http_request_count.values())
         total_icmp_requests = sum(icmp_request_count.values())
+        total_syn_packets = sum(syn_packet_count.values())
 
-        if total_http_requests > HTTP_THRESHOLD or total_icmp_requests > ICMP_THRESHOLD:
+        if total_http_requests > HTTP_THRESHOLD or total_icmp_requests > ICMP_THRESHOLD or total_syn_packets > SYN_THRESHOLD:
             print("Unusual traffic detected.")
             print(f"Total HTTP Requests in last {TIME_WINDOW} seconds: {total_http_requests}")
             print(f"Total ICMP Echo Requests in last {TIME_WINDOW} seconds: {total_icmp_requests}")
+            print(f"Total SYN Packets in last {TIME_WINDOW} seconds: {total_syn_packets}")
             print("Stopping the program due to unusual traffic.")
             os._exit(1)
 
         # Reset the counts for the next time window
         http_request_count.clear()
         icmp_request_count.clear()
+        syn_packet_count.clear()
 
 if __name__ == "__main__":
     try:
