@@ -1,15 +1,30 @@
 from scapy.all import *
 from collections import defaultdict
 import time
-import threading 
+import threading
 
 # Configuration
-MONITOR_INTERFACE = 'eth0','wlan0'  # Network interface to monitor
 TIME_WINDOW = 60  # Time window in seconds to count requests
 THRESHOLD = 100  # Number of requests considered unusual
 
 # Initialize a dictionary to store the count of requests
 request_count = defaultdict(int)
+
+def get_valid_interface():
+    interfaces = get_if_list()
+    print("Available network interfaces:")
+    for i, iface in enumerate(interfaces):
+        print(f"{i}: {iface}")
+    
+    while True:
+        try:
+            iface_index = int(input("Enter the number of the network interface to monitor: "))
+            if 0 <= iface_index < len(interfaces):
+                return interfaces[iface_index]
+            else:
+                print("Invalid number. Please choose from the available interfaces.")
+        except ValueError:
+            print("Invalid input. Please enter a number corresponding to the interface.")
 
 def packet_callback(packet):
     # Check if the packet is an ICMP echo request
@@ -36,8 +51,9 @@ def detect_spike():
         request_count.clear()
 
 if __name__ == "__main__":
-    # Get the target IP from user input
+    # Get the target IP and network interface from user input
     target_ip = input("Enter the target IP address: ")
+    MONITOR_INTERFACE = get_valid_interface()
 
     # Run monitoring and detection in parallel
     monitor_thread = threading.Thread(target=monitor_requests)
