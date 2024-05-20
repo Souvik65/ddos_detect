@@ -1,7 +1,7 @@
 from scapy.all import *
 from collections import defaultdict
 import time
-import threading
+import threading 
 
 # Configuration
 MONITOR_INTERFACE = 'eth0','wlan0'  # Network interface to monitor
