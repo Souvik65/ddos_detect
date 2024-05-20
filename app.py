@@ -67,11 +67,18 @@ def detect_spike():
         total_syn_packets = sum(syn_packet_count.values())
 
         if total_http_requests > HTTP_THRESHOLD or total_icmp_requests > ICMP_THRESHOLD or total_syn_packets > SYN_THRESHOLD:
-            print("Unusual traffic detected.")
+            print(''' 
+                 ____  ____   ___  ____     ____  _____ _____ _____ ____ _____ _____ ____  
+                |  _ \|  _ \ / _ \/ ___|   |  _ \| ____|_   _| ____/ ___|_   _| ____|  _ \ 
+                | | | | | | | | | \___ \   | | | |  _|   | | |  _|| |     | | |  _| | | | |
+                | |_| | |_| | |_| |___) |  | |_| | |___  | | | |__| |___  | | | |___| |_| |
+                |____/|____/ \___/|____/   |____/|_____| |_| |_____\____| |_| |_____|____/ 
+
+            ''')
             print(f"Total HTTP Requests in last {TIME_WINDOW} seconds: {total_http_requests}")
             print(f"Total ICMP Echo Requests in last {TIME_WINDOW} seconds: {total_icmp_requests}")
             print(f"Total SYN Packets in last {TIME_WINDOW} seconds: {total_syn_packets}")
-            print("Stopping the program due to unusual traffic.")
+            print("The Website is getting A unusual traffic, Please take Action Immediately.")
             os._exit(1)
 
         # Reset the counts for the next time window
