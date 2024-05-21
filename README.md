@@ -1,4 +1,4 @@
-# Detect
+# DDOS_Detect
 
 #Explanation of Changes:
 User Input for Website Domain:
