@@ -7,7 +7,7 @@ This tool combines sophisticated algorithms and state-of-the-art machine learnin
 #
 Real-time Detection: Continuously monitors incoming and outgoing network traffic, instantly identifying DDoS attacks as they happen.
 
-#<h1>Installation</h1>
+# <h1>Installation</h1>
 `pip install scapy`<br>
 `git clone https://github.com/Souvik65/ddos_detect.git`<br>
 `cd ddos_detect`<br>
