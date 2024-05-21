@@ -1,20 +1,18 @@
 # DDOS_Detect
 
-#Explanation of Changes:
-User Input for Website Domain:
+#
+Welcome to the DDoS Detection Tool, your comprehensive solution for safeguarding network infrastructure against Distributed Denial of Service (DDoS) attacks. DDoS attacks, which aim to disrupt the normal traffic of a targeted server, service, or network by overwhelming the target with a flood of Internet traffic, can cause significant downtime and damage. Our tool is engineered to provide robust, real-time detection and mitigation of these attacks, ensuring your services remain operational and secure.
 
-Added target_website = input("Enter the target website domain (e.g., example.com): ") to get the website domain from the user.
-Use the User-Provided Domain:
+This tool combines sophisticated algorithms and state-of-the-art machine learning techniques to continuously analyze network traffic, identify anomalous patterns indicative of DDoS activity, and respond promptly to neutralize threats. It is designed with scalability in mind, making it suitable for networks of all sizes, from small businesses to large enterprises.
+#
+Real-time Detection: Continuously monitors incoming and outgoing network traffic, instantly identifying DDoS attacks as they happen.
 
-The variable target_website is used in the packet_callback function to check if the packet is an HTTP request to the target website.
-How to Run the Script:
-Install Dependencies:
+#<h1>Installation</h1>
+`pip install scapy`
+`git clone `
+`cd ddos_detect`
+`sudo python3 detect.py`
 
-This example assumes you have a basic understanding of network traffic and have scapy installed. 
-If not, you can install it using `pip install scapy`.
 
-Ensure scapy is installed: pip install scapy
-Run the Script:
 
-Execute the script: `sudo python3 app.py`
-Provide the target website domain when prompted.
+Use it wisely donot misuse it.
