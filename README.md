@@ -1,4 +1,4 @@
-# DDOS_Detect
+# DDoS Detection Tool
 
 #
 Welcome to the DDoS Detection Tool, your comprehensive solution for safeguarding network infrastructure against Distributed Denial of Service (DDoS) attacks. DDoS attacks, which aim to disrupt the normal traffic of a targeted server, service, or network by overwhelming the target with a flood of Internet traffic, can cause significant downtime and damage. Our tool is engineered to provide robust, real-time detection and mitigation of these attacks, ensuring your services remain operational and secure.
